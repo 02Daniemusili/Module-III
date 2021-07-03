@@ -1,0 +1,274 @@
+---
+title: "Moringa Module III Project"
+author: "Daniel"
+date: "7/3/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+***Objectives***
+
+The objective of the project is to carry out exploratory data analysis to understand what factors that can possibly make someone click on an add
+
+***Metrics of Success***
+
+To use various statistical techniques to find the mean, median, standard deviation, range correlation to find what factors might have led to clicking to an add.
+
+***ADVERTISING COMPANY DATASET***
+
+***loading the dataset***
+
+previewing the first 6 items of our dataset
+
+```{r, echo=TRUE}
+#loading data in R environment
+advertising=read.csv("http://bit.ly/IPAdvertisingData")
+
+head(advertising)
+```
+
+```{r,echo=TRUE}
+str(advertising)
+
+```
+
+
+
+Checking the dataset description
+
+```{r, echo="TRUE"}
+tail(advertising)
+```
+
+***checking dataset dimensions***
+
+```{r,echo=TRUE}
+dim(advertising)
+```
+
+##Data cleaning
+***Checking for null values***
+
+```{r,echo=TRUE}
+colSums(is.na(advertising))
+
+```
+
+***checking the list of complete columns in our dataset***
+
+```{r,echo=TRUE}
+advertising[!complete.cases(advertising),]
+```
+
+thus our dataset doesn't have null values
+
+***checking for duplicates in our dataset***
+
+```{r,echo=TRUE}
+advertising[duplicated(advertising),]
+
+```
+
+thus our data set did not contain duplicated data
+
+***Checking the presence of outliers in the dataset***
+
+```{r,echo=TRUE}
+boxplot(advertising$Age ,col="red3")
+
+```
+thus no outliers on the Age column
+
+```{r,echo=TRUE}
+
+boxplot(advertising$Area.Income, col=" purple1")
+
+```
+
+```{r,echo=TRUE}
+boxplot(advertising$Daily.Internet.Usage, col = "red3")
+```
+
+the column daily.internet usage didn't have any outliers
+
+##Exploratory Data Analysis
+
+***Measures of central tendency***
+
+calculating the mean of our categorical columns
+```{r echo=TRUE}
+mean_Age=mean(advertising$Age)
+mean_Age
+mean_time=mean(advertising$Daily.Time.Spent.on.Site)
+mean_time
+mean_area_income=mean(advertising$Area.Income)
+mean_area_income
+mean_internet_usage=mean(advertising$Daily.Internet.Usage)
+mean_internet_usage
+```
+calculating the median of the categorical columns
+
+```{r,echo=TRUE}
+median(advertising$Daily.Time.Spent.on.Site)
+median(advertising$Age)
+median(advertising$Area.Income)
+median(advertising$Daily.Internet.Usage)
+median(advertising$Clicked.on.Ad)
+
+```
+calculating the range
+```{r,echo=TRUE}
+range(advertising$Daily.Time.Spent.on.Site)
+range(advertising$Age)
+range(advertising$Area.Income)
+range(advertising$Daily.Internet.Usage)
+range(advertising$Clicked.on.Ad)
+```
+finding the standard devition
+```{r,echo=TRUE}
+sd(advertising$Daily.Time.Spent.on.Site)
+sd(advertising$Age)
+sd(advertising$Area.Income)
+sd(advertising$Daily.Internet.Usage)
+sd(advertising$Clicked.on.Ad)
+```
+```{r}
+#checking for quantiles in each columns
+quantile(advertising$Daily.Time.Spent.on.Site)
+quantile(advertising$Age)
+quantile(advertising$Area.Income)
+quantile(advertising$Daily.Internet.Usage)
+quantile(advertising$Clicked.on.Ad)
+
+```
+ 
+
+***Numerical***
+
+```{r,echo=TRUE}
+count_male<- table(advertising$Male)
+barplot(count_male,main="Male frequency graph", xlab="Male",ylab= "frequency",legend=row.names(count_male),col=c("red","blue"))
+```
+
+```{r,echo=TRUE}
+count_clicked<- table(advertising$Clicked.on.Ad)
+barplot(count_clicked,main="Clicked.on.Ad frequency graph", xlab="Clicked.on.Ad",ylab= "frequency",legend=row.names(count_clicked),col=c("brown","red"))
+```
+
+From the figure we can see that the number of clicks on the ad were equal to the number of people who didn't click on the add
+
+
+
+```{r,echo=TRUE}
+#Frequency histogram to show daily time spend on site
+hist(advertising$Daily.Time.Spent.on.Site,col=c("red"))
+```
+
+the amount of time is uniformly distributed with the least being beyond 100
+
+```{r ,echo=TRUE}
+hist(advertising$Age,col=c("blue"))
+```
+
+```{r ,echo=TRUE}
+#frequency histogram to show the income distribution
+hist(advertising$Area.Income,col = "brown")
+```
+
+The area.income is right skewed with most of the population ranging 50000 to 70000
+
+```{r ,echo=TRUE}
+#histogram to show the Age distribution
+hist(advertising$Age,col=("maroon4"))
+```
+
+The age distribution is left skewed with most of the data around the 25 years and 40 years of age
+
+##Bivariate analysis
+
+```{r,echo=TRUE}
+head(advertising)
+```
+
+```{r,echo=TRUE}
+#scatter plot to show the relationship between age and Daily time spend on site
+plot(advertising$Age, advertising$Daily.Time.Spent.on.Site )
+```
+
+the age between 25 and 45has great internet usage which reduces as it moves towards 60
+
+```{r,echo=TRUE}
+#scater plot to show the relationship between Age and area income
+plot(advertising$Age, advertising$Area.Income )
+
+```
+
+from the plot majority of the people with the wealth lie around the age of 45 and below
+
+```{r,echo=TRUE}
+#scater plot to show the relationship between Age and Daily.iinternet usage
+
+plot(advertising$Age, advertising$Daily.Internet.Usage, pch = 19, col = "red")
+
+```
+
+There is great internet usage between the age 25 to 35 where it then reduces as the age increases
+
+```{r,echo=TRUE}
+
+adverts <- subset (advertising, select = -c(Ad.Topic.Line,City,Country,Timestamp))
+
+```
+
+```{r,echo=TRUE}
+#plotting a scatter plot for the adverts dataset
+plot(adverts)
+```
+
+```{r,echo=TRUE}
+res2 <-cor.test(advertising$Age, advertising$Daily.Internet.Usage,  method = "spearman")
+res2
+
+```
+
+```{r,echo=TRUE}
+res2 <-cor.test(advertising$Age, advertising$Clicked.on.Ad,  method = "spearman")
+
+res2
+```
+
+
+
+```{r,echo=TRUE}
+library(corrplot)
+
+mydata.rcorr = cor(as.matrix(adverts))
+mydata.rcorr
+corrplot(mydata.rcorr)
+```
+
+from the analysis there is a strong positive correlation between daily.time.spent.on.net and daily internet usage. There is also a high positive correlation between Age and the number of clicks on add
+
+```{r,echo=TRUE}
+
+palette = colorRampPalette(c("green", "white", "red")) (20)
+heatmap(x = mydata.rcorr, col = palette, symm = TRUE)
+
+```
+
+from the analysis there is a strong positive correlation between daily.time.spent.on.net and daily internet usage. There is also a high positive correlation between Age and the number of clicks on add
+
+```{r,echo=TRUE}
+
+library("PerformanceAnalytics")
+
+chart.Correlation(mydata.rcorr, histogram=TRUE, pch=19)
+
+```
+
+from the analysis there is a strong positive c0rrelation between daily.time.spent.on.net and daily internet usage. There is also a high positive correlation between Age and the number of clicks on add 
+##conclusion
+There is a strong positive correlation between the Age of a person and clicking to an add
